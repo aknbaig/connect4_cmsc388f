@@ -23,11 +23,17 @@ runConnect4 playerId board = do
 
 {- This will print the game board to the screen -}
 printGameBoard :: [[Char]] -> IO ()
-printGameBoard board = putStrLn "Write method to print the gameboard"
+printGameBoard board = error "Define me!"
 
 {- This method will either ask the user to make a move or ask the computer to make a move -} 
 turn :: Integer -> [[Char]] -> [[Char]]
-turn turnChoice board = board
+turn playerId board = if playerId == 0 then playerTurn board else comTurn board
+
+{- Specfic method to handle the players turn, an updated board will be returned-}
+playerTurn board = error "Define me!" 
+
+{- Specfic method to handle the AI/Computer's turn, an updated board will be returned-}
+comTurn board = error "Define me!"
 
 {- This method will look at a gameboard and determine if the game is over, if the AI won then the returned integer will be 1 if the player won then 0, if draw then -1-}
 finishedGame :: [[Char]] -> (Bool, Integer)

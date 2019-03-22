@@ -5,21 +5,17 @@ startConnect4 = do
 	putStrLn "Would you like to go first (1) or second (2)"
 	turnChoice <- getLine
 	--putStrLn ("The choice was " ++ turnChoice)
+	let board = [['-','-','-','-','-','-','-'],
+					   ['-','-','-','-','-','-','-'],
+					   ['-','-','-','-','-','-','-'],
+					   ['-','-','-','-','-','-','-'],
+					   ['-','-','-','-','-','-','-'],
+					   ['-','-','-','-','-','-','-']]
 	-- if the user wants to go first the we call runConnect 4 with the playerId set to 0 otherwise we set it to 1
 	if turnChoice == "1" then 
-		runConnect4 0 [['-','-','-','-','-','-','-'],
-					   ['-','-','-','-','-','-','-'],
-					   ['-','-','-','-','-','-','-'],
-					   ['-','-','-','-','-','-','-'],
-					   ['-','-','-','-','-','-','-'],
-					   ['-','-','-','-','-','-','-']] 
+		runConnect4 0 board 
 	else 
-		runConnect4 1 [['-','-','-','-','-','-','-'],
-					   ['-','-','-','-','-','-','-'],
-					   ['-','-','-','-','-','-','-'],
-					   ['-','-','-','-','-','-','-'],
-					   ['-','-','-','-','-','-','-'],
-					   ['-','-','-','-','-','-','-']] 
+		runConnect4 1 board
 
 {- This method will run the game and when a winner is picked or a draw occurs, the outcome will be printed to the screen 
 This method will run until game state is true which means that a winner has been chosen or a draw has occurred -}
@@ -34,8 +30,13 @@ runConnect4 playerId board = do
 			(True, -1) -> putStrLn "The game has ended in a draw"
 
 {- This will print the game board to the screen -}
-printGameBoard :: [[Char]] -> IO ()
-printGameBoard board = error "Define me!"
+printGameBoard :: [[Char]] -> IO()
+printGameBoard board = 
+	case board of
+		row:rowt -> do 
+			putStrLn row 
+			printGameBoard rowt
+		[] -> putStr ""			   
 
 {- This method will either ask the user to make a move or ask the computer to make a move -} 
 turn :: Integer -> [[Char]] -> [[Char]]

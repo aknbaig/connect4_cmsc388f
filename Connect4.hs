@@ -44,11 +44,20 @@ turn playerId board = if playerId == 0 then playerTurn board else comTurn board
 
 {- Specfic method to handle the players turn, an updated board will be returned -}
 playerTurn :: [[Char]] -> [[Char]]
-playerTurn board = error "Define me!" 
+playerTurn board = do
+	putStrLn "Enter column number of row to drop piece: "
+	column <- getChar
+	let columnNum = getInt column in
+	dropPiece board columnNum 'P'
 
 {- Specfic method to handle the AI/Computer's turn, an updated board will be returned -}
 comTurn :: [[Char]] -> [[Char]]
 comTurn board = error "Define me!"
+
+{- drops the piece into the designated column on the game board and returns an updated gameboard-}
+dropPiece :: [[Char]] -> Integer -> Char -> [[Char]]
+dropPiece board column token = error "Define me"
+
 
 {- This method will look at a gameboard and determine if the game is over, 
 	if the AI won then the returned integer will be 1 if the player won then 0, if draw then -1 -}

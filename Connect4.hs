@@ -1,3 +1,5 @@
+import Data.Char
+
 main = startConnect4
 
 startConnect4 = do
@@ -24,7 +26,17 @@ runConnect4 playerId board = do
 	printGameBoard board 
 	let gamestate = finishedGame board in 
 		case gamestate of
-			(False, _) -> if playerId == 0 then runConnect4 1 (turn 0 board) else runConnect4 0 (turn 1 board)
+			(False, _) -> if playerId == 0 then do
+					putStrLn "Enter column number of row to drop piece (Player): "
+					column <- getChar
+					newLine <- getChar
+					runConnect4 1 (dropPiece board ((Data.Char.digitToInt column) - 1) 'P') 
+				else do
+					putStrLn "Enter column number of row to drop piece (Computer): "
+					column <- getChar
+					newLine <- getChar
+					--runConnect4 0 (comTurn board)
+					runConnect4 0 (dropPiece board ((Data.Char.digitToInt column) - 1) 'C') 
 			(True, 1) -> putStrLn "The computer has won!"
 			(True, 0) -> putStrLn "You have won!"
 			(True, -1) -> putStrLn "The game has ended in a draw"
@@ -38,25 +50,23 @@ printGameBoard board =
 			printGameBoard rowt
 		[] -> putStr ""			   
 
-{- This method will either ask the user to make a move or ask the computer to make a move -} 
-turn :: Integer -> [[Char]] -> [[Char]]
-turn playerId board = if playerId == 0 then playerTurn board else comTurn board
-
-{- Specfic method to handle the players turn, an updated board will be returned -}
-playerTurn :: [[Char]] -> [[Char]]
-playerTurn board = do
-	putStrLn "Enter column number of row to drop piece: "
-	column <- getChar
-	let columnNum = getInt column in
-	dropPiece board columnNum 'P'
-
 {- Specfic method to handle the AI/Computer's turn, an updated board will be returned -}
 comTurn :: [[Char]] -> [[Char]]
 comTurn board = error "Define me!"
 
-{- drops the piece into the designated column on the game board and returns an updated gameboard-}
-dropPiece :: [[Char]] -> Integer -> Char -> [[Char]]
-dropPiece board column token = error "Define me"
+{- drops the piece into the designated column on the game board and returns an updated gameboard -}
+dropPiece :: [[Char]] -> Int -> Char -> [[Char]]
+dropPiece board column token = 
+	case board of
+		row1:row2:rowt -> if (row1!!column == '-') && (row2!!column /= '-') then (insertPiece token column row1):row2:rowt else row1:(dropPiece (row2:rowt) column token)
+		row:[] -> [(insertPiece token column row)]
+
+{- Inserts a piece into a row of the gameboard -}
+insertPiece :: Char -> Int -> [Char] -> [Char]
+insertPiece token columnNum row = 
+	case row of
+		[] -> []
+		h:t -> if columnNum == 0 then token:t else h:(insertPiece token (columnNum - 1) t)
 
 
 {- This method will look at a gameboard and determine if the game is over, 

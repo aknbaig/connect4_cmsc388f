@@ -1,1 +1,10 @@
-Repo containing code for final project in CMSC388F
+To run this program first compile the Connect4.hs file: ghc -o connect4 Connect4.hs
+
+After creating connect4, to run the program: ./connect4
+
+You will be asked for a screen which will ask if you would like to go first or second. After this you will recieve prompts asking where you would like to drop the pieces (currently you must select where to drop the piece for both the player and the computer). The game will eventually declare a winner, which it will output to a screen, after it determines if the Player or the Computer has lined up 4 tokens onto the board. The player tokens are marked as 'P' and the computer tokens are marked as 'C'.
+
+Left to do:
+The basic game is ready but at the moment requires inputs for the player and the computer. The final part would be to replace asking the user to input the moves for the comptuer and replacing it with an actual algorithm that determines moves for the computer to make. Also at the moment there is no checking if user input is valid (column numbers where players dropped tokens aren't checked for instance, so the user could input a negative number).
+
+

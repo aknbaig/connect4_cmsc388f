@@ -1,5 +1,7 @@
 import Data.Char
-
+import System.Random (mkStdGen)
+import System.Random (randomRIO)
+import System.Random (randomR)
 main = startConnect4
 
 startConnect4 = do
@@ -29,14 +31,15 @@ runConnect4 playerId board = do
 			(False, _) -> if playerId == 0 then do
 					putStrLn "Enter column number of row to drop piece (Player): "
 					column <- getChar
-					newLine <- getChar
 					runConnect4 1 (dropPiece board ((Data.Char.digitToInt column) - 1) 'P') 
 				else do
-					putStrLn "Enter column number of row to drop piece (Computer): "
-					column <- getChar
-					newLine <- getChar
-					--runConnect4 0 (comTurn board)
-					runConnect4 0 (dropPiece board ((Data.Char.digitToInt column) - 1) 'C') 
+					-- putStrLn "Enter column number of row to drop piece (Computer): "
+					-- column <- getChar
+					let s1 = mkStdGen 42
+					col <- randomRIO (0,6)
+					putStrLn "Computers has made the move"
+					runConnect4 0 (comTurn col board)
+					-- runConnect4 0 (dropPiece board ((Data.Char.digitToInt column) - 1) 'C') 
 			(True, 1) -> putStrLn "The computer has won!"
 			(True, 0) -> putStrLn "You have won!"
 			(True, -1) -> putStrLn "The game has ended in a draw"
@@ -48,11 +51,47 @@ printGameBoard board =
 		row:rowt -> do 
 			putStrLn row 
 			printGameBoard rowt
-		[] -> putStr ""			   
+		[] -> putStr ""	   
 
 {- Specfic method to handle the AI/Computer's turn, an updated board will be returned -}
-comTurn :: [[Char]] -> [[Char]]
-comTurn board = error "Define me!"
+comTurn :: Int -> [[Char]] -> [[Char]]
+comTurn i1 board = let playerToks = (foldBoard board 'P' 6) in
+				   let blockCol = (threeInARow board playerToks) in	   
+				   if blockCol > -1 then dropPiece board (fromIntegral blockCol) 'C'
+				   else dropPiece board i1 'C'
+
+threeInARow :: [[Char]] -> [(Integer, Integer)] -> Integer
+threeInARow board tokPositions = 
+	case tokPositions of
+		(row,col):t -> (
+			let horizontal = (
+				if (elem (row,col+1) t) && (elem (row,col+2) t) && ((searchBoard board (fromIntegral row-1) (fromIntegral col+2)) == '-') then (col+2)
+				else if (elem (row,col-1) t) && (elem (row,col+1) t) && ((searchBoard board (fromIntegral row-1) (fromIntegral col+1)) == '-') then (col + 1)
+				else if (elem (row,col-2) t) && (elem (row,col-1) t) && ((searchBoard board (fromIntegral row-1) (fromIntegral col)) == '-') then (col)
+				else if ((searchBoard board (fromIntegral row-1) (fromIntegral col-2)) == '-') && (elem (row,col+1) t) && (elem (row, col + 2) t) then (col-2)
+				else if (elem (row,col-1) t) && ((searchBoard board (fromIntegral row-1) (fromIntegral col)) == '-') && (elem (row,col+2) t) then (col) -- middle cases
+				else if (elem (row,col-2) t) && ((searchBoard board (fromIntegral row-1) (fromIntegral col-2)) == '-') && (elem (row, col+1) t) then (col-2) -- middle cases
+				else if ((searchBoard board (fromIntegral row-1) (fromIntegral col-3)) == '-') && (elem (row,col-1) t) && (elem (row,col+1) t) then (col - 3)
+				else if ((searchBoard board (fromIntegral row-1) (fromIntegral col-4)) == '-') && (elem (row,col-2) t) && (elem (row,col-1) t) then (col - 4)
+				else -1
+				) in
+			let vertical = (
+				if (elem (row+1,col) t) && (elem (row+2,col) t) && ((searchBoard board (fromIntegral row + 2) (fromIntegral col)) == '-') then col-1
+				else if (elem (row-1,col) t) && (elem (row+1,col) t) && ((searchBoard board (fromIntegral row + 1) (fromIntegral col)) == '-') then col-1
+				else if (elem (row-2,col) t) && (elem (row-1,col) t) && ((searchBoard board (fromIntegral row) (fromIntegral col)) == '-') then col-1
+				else if ((searchBoard board (fromIntegral row - 4) (fromIntegral col)) == '-')&& (elem (row-2,col) t) && (elem (row-1,col) t) then col-1
+				else -1
+				) in
+			if (horizontal > -1) then horizontal
+			else if (vertical > -1) then vertical
+			else threeInARow board t
+				)
+		[] -> -1
+
+searchBoard :: [[Char]] -> Int -> Int -> Char
+searchBoard board row col = 
+	case board of 
+		row1:rowt -> if (row > 0) then (searchBoard rowt (row-1) col) else if (col < 7 && col >= 0) then row1!!(col) else 'z'
 
 {- drops the piece into the designated column on the game board and returns an updated gameboard -}
 dropPiece :: [[Char]] -> Int -> Char -> [[Char]]

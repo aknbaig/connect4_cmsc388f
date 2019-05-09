@@ -1,3 +1,6 @@
+First you have to download random package by using cabal install random
+If your on a mac comment line 37
+If your on PC keep line 37
 To run this program first compile the Connect4.hs file: ghc -o connect4 Connect4.hs
 
 After creating connect4, to run the program: ./connect4

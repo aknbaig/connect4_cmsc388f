@@ -57,33 +57,45 @@ printGameBoard board =
 comTurn :: Int -> [[Char]] -> [[Char]]
 comTurn i1 board = let playerToks = (foldBoard board 'P' 6) in
 				   let blockCol = (threeInARow board playerToks) in	   
-				   if blockCol > -1 then dropPiece board (fromIntegral blockCol) 'C'
-				   else dropPiece board 2 'C'
-
+				   if blockCol > (-1) then dropPiece board (fromIntegral blockCol) 'C'
+				   else dropPiece board i1 'C'
+--(elem (row-3,col) t) && (elem (row-2,col) t) && ((searchBoard board (fromIntegral row - 2) (fromIntegral col)) == '-') then col-1
 threeInARow :: [[Char]] -> [(Integer, Integer)] -> Integer
 threeInARow board tokPositions = 
 	case tokPositions of
 		(row,col):t -> (
 			let horizontal = (
-				if ((searchBoard board (fromIntegral row-1) (fromIntegral col-4)) == '-') && (elem (row,col-2) t) && (elem (row,col-1) t) then (col - 4)
-				else if ((searchBoard board (fromIntegral row-1) (fromIntegral col-3)) == '-') && (elem (row,col-1) t) && (elem (row,col+1) t) then (col - 3)
-				else if ((searchBoard board (fromIntegral row-1) (fromIntegral col-2)) == '-') && (elem (row,col+1) t) && (elem (row, col + 2) t) then (col-2)
-				else if (elem (row,col-1) t) && ((searchBoard board (fromIntegral row-1) (fromIntegral col)) == '-') && (elem (row,col+2) t) then (col) -- middle cases
-				else if (elem (row,col-2) t) && ((searchBoard board (fromIntegral row-1) (fromIntegral col-2)) == '-') && (elem (row, col+1) t) then (col-2) -- middle cases
-				else if (elem (row,col-2) t) && (elem (row,col-1) t) && ((searchBoard board (fromIntegral row-1) (fromIntegral col)) == '-') then (col)
-				else if (elem (row,col-1) t) && (elem (row,col+1) t) && ((searchBoard board (fromIntegral row-1) (fromIntegral col+1)) == '-') then (col + 1)
+				if (elem (row,col+1) t) && (elem (row,col+2) t) &&  ((searchBoard board (fromIntegral row-1) (fromIntegral col-2)) == '-') then col-2
 				else if (elem (row,col+1) t) && (elem (row,col+2) t) && ((searchBoard board (fromIntegral row-1) (fromIntegral col+2)) == '-') then (col+2)
+				else if (elem (row,col+1) t) && ((searchBoard board (fromIntegral row-1) (fromIntegral col+1)) == '-') && (elem (row,col+3) t) then col+1
+				else if ((searchBoard board (fromIntegral row-1) (fromIntegral col)) == '-') && (elem (row,col+2) t) && (elem (row,col+3) t) then col
 				else -1
 				) in
 			let vertical = (
-				if ((searchBoard board (fromIntegral row - 4) (fromIntegral col)) == '-')&& (elem (row-2,col) t) && (elem (row-1,col) t) then col-1
-				else if (elem (row-1,col) t) && (elem (row+1,col) t) && ((searchBoard board (fromIntegral row + 1) (fromIntegral col)) == '-') then col-1
-				else if (elem (row-2,col) t) && (elem (row-1,col) t) && ((searchBoard board (fromIntegral row) (fromIntegral col)) == '-') then col-1
-				else if (elem (row+1,col) t) && (elem (row+2,col) t) && ((searchBoard board (fromIntegral row + 2) (fromIntegral col)) == '-') then col-1
+				if (elem (row+1,col) t) && (elem (row+2,col) t) && ((searchBoard board (fromIntegral row + 1) (fromIntegral col-1)) == '-') then col-1
+				else if (elem (row-1,col) t) && (elem (row+1,col) t) && ((searchBoard board (fromIntegral row + 1) (fromIntegral col-1)) == '-') then col-1
+				else if (elem (row-2,col) t) && (elem (row-1,col) t) && ((searchBoard board (fromIntegral row) (fromIntegral col-1)) == '-') then col-1
+				-- else if (elem (row+1,col) t) && (elem (row+2,col) t) && ((searchBoard board (fromIntegral row + 2) (fromIntegral col)) == '-') then col-1
+				else (-1)
+				) in
+			let leftDiagonal = (
+				if (elem (row+1,col-1) t) && (elem (row+2,col-2) t) && (columnPieces board (fromIntegral col-4) 0) == (fromIntegral row+2) then col-4
+				else if (elem (row+1,col-1) t) && (elem (row+2,col-2) t) && (searchBoard board (fromIntegral row-2) (fromIntegral col) == '-') && ((columnPieces board (fromIntegral col) 0) == (fromIntegral row-2)) then col
+				else if (elem (row+1,col-1) t) && (elem (row+3,col-3) t) && (searchBoard board (fromIntegral row+1) (fromIntegral col-3) == '-') && ((columnPieces board (fromIntegral col-3) 0) == (fromIntegral row +1)) then col-3
+			 	else if (elem (row+2,col-2) t) && (elem (row+3,col-3) t)  && (searchBoard board (fromIntegral row) (fromIntegral col-2) == '-') && ((columnPieces board (fromIntegral col-2) 0) == (fromIntegral row)) then col-2
 				else -1
 				) in
+				let rightDiagonal = (
+					if (elem (row+1,col+1) t) && (elem (row+2,col+2) t) && (columnPieces board (fromIntegral col+2) 0) == (fromIntegral row+2) then col+2
+					else if (elem (row+1,col+1) t) && (columnPieces board (fromIntegral col+1) 0) == (fromIntegral row+1) && (elem (row+3,col+3) t) && (searchBoard board (fromIntegral row+1) (fromIntegral col+1) == '-')  then col+1
+					else if (columnPieces board (fromIntegral col) 0) == (fromIntegral row) && (elem (row+2,col+2) t) && (elem (row+3,col+3) t) && (searchBoard board (fromIntegral row) (fromIntegral col) == '-') then col
+					else if (columnPieces board (fromIntegral col-2) 0) == (fromIntegral row-2) && (elem (row+1,col+1) t) && (elem (row+2,col+2) t) && (searchBoard board (fromIntegral row-2) (fromIntegral col-2) == '-') then col-2
+					else -1
+					) in
 			if (horizontal > -1) then horizontal
 			else if (vertical > -1) then vertical
+			else if (leftDiagonal > -1) then leftDiagonal
+			else if (rightDiagonal > -1) then rightDiagonal
 			else threeInARow board t
 				)
 		[] -> -1
@@ -92,6 +104,12 @@ searchBoard :: [[Char]] -> Int -> Int -> Char
 searchBoard board row col = 
 	case board of 
 		row1:rowt -> if (row > 0) then (searchBoard rowt (row-1) col) else if (col < 7 && col >= 0) then row1!!(col) else 'z'
+
+columnPieces :: [[Char]] -> Int -> Int -> Int
+columnPieces board col acc = 
+	case board of 
+		row1:rowt -> if (col >=0 && col <=6 && row1!!col /= '-') then columnPieces rowt col (acc+1) else columnPieces rowt col acc 
+		[] -> acc
 
 {- drops the piece into the designated column on the game board and returns an updated gameboard -}
 dropPiece :: [[Char]] -> Int -> Char -> [[Char]]

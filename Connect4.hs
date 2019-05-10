@@ -34,7 +34,7 @@ runConnect4 playerId board = do
 					runConnect4 1 (dropPiece board ((Data.Char.digitToInt column) - 1) 'P') 
 				else do
 					-- putStrLn "Enter column number of row to drop piece (Computer): "
-					-- column <- getChar
+					column <- getChar
 					let s1 = mkStdGen 42
 					col <- randomRIO (0,6)
 					putStrLn "Computers has made the move"
